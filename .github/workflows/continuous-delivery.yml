@@ -1,0 +1,11 @@
+name: Continuous Delivery Workflow
+on:
+  push:
+    branches:
+      - main # ou qualquer outra branch
+
+jobs:
+  deliver:
+    runs-on: ubuntu-latest
+    steps:
+     
