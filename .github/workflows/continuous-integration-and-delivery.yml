@@ -1,4 +1,4 @@
-name: Continuous Delivery
+name: Continuous Integration and Delivery
 on:
   push:
     branches:
@@ -17,13 +17,15 @@ jobs:
         with:
           python-version: '3.12'
 
+      # Garante a instalação do pylint antes de usá-lo
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install fastapi uvicorn pylint
 
+      # Executa através do módulo Python para evitar erro 127
       - name: Run Python Lint
-        run: pylint main.py || True
+        run: python -m pylint main.py || true
 
   # Job 2: Entrega/Deploy (CD) - Só roda se o 'build' passar
   deploy:
