@@ -1,37 +1,44 @@
-name: Continuous Delivery Workflow
+name: Continuous Delivery
 on:
   push:
     branches:
       - main
 
 jobs:
-  deliver:
+  # Job 1: Build & Integração (CI)
+  build:
     runs-on: ubuntu-latest
     steps:
-      # 1. Baixa o código do repositório para a máquina virtual
       - name: Check out repository code
         uses: actions/checkout@v4
 
-      # 2. Configura o ambiente Python para o FastAPI
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.12'
 
-      # 3. Instala as dependências (simulando a preparação do ambiente)
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install fastapi uvicorn
+          pip install fastapi uvicorn pylint
 
-      # 4. Empacota a aplicação (preparando para a entrega contínua)
+      - name: Run Python Lint
+        run: pylint main.py
+
+  # Job 2: Entrega/Deploy (CD) - Só roda se o 'build' passar
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
       - name: Package application
         run: |
           mkdir deploy_folder
           cp main.py deploy_folder/
           zip -r deploy_package.zip deploy_folder/
 
-      # 5. Salva o pacote como um Artefato no GitHub
       - name: Upload Deployment Artifact
         uses: actions/upload-artifact@v4
         with:
